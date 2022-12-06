@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+  <body style="background-color: #EEEEEE;">
+    <style>
+      option{
+        font-size: 16px;
+        padding: 5px;
+        margin:3px
+      }
+      select{
+        height: 35px;
+      }
+    </style>
+    <script>
+      let startQuiz = false;
+      
+      const questions = [
+        {
+          question: "Do you have high blood pressure?",
+          num: 1,
+          id: "high_bp",
+          type: "mcq",
+          options: [
+            {
+              value: "yes",
+              field: "Yes",
+            },
+            {
+              value: "no",
+              field: "No",
+            },
+          ],
+        },
+        {
+          question: "Do you have high cholestrol?",
+          num: 2,
+          id: "cholestrol",
+          type: "mcq",
+          options: [
+            {
+              value: "yes",
+              field: "Yes",
+            },
+            {
+              value: "no",
+              field: "No",
+            },
+          ],
+        },
+        {
+          question: "Enter your BMI",
+          num: 3,
+          id: "bmi",
+          type: "blank",
+        },
+        {
+          question: "Do you ever had a stroke?",
+          num: 4,
+          id: "stroke",
+          type: "mcq",
+          options: [
+            {
+              value: "yes",
+              field: "Yes",
+            },
+            {
+              value: "no",
+              field: "No",
+            },
+          ],
+        },
+        {
+          question: "Have you experienced any severe heart condition before?",
+          num: 5,
+          id: "heart_condition",
+          type: "mcq",
+          options: [
+            {
+              value: "yes",
+              field: "Yes",
+            },
+            {
+              value: "no",
+              field: "No",
+            },
+          ],
+        },
+        {
+          question: "Let us know your general health condition?",
+          num: 6,
+          id: "general_health",
+          type: "mcq",
+          options: [
+            {
+              value: "good",
+              field: "Good",
+            },
+            {
+              value: "not good",
+              field: "Not Good",
+            },
+          ],
+        },
+        {
+          question:
+            "In past 30 days, please enter how many number of days have you faced pain or discomfort physically?",
+          num: 7,
+          id: "physical_health",
+          type: "blank",
+        },
+        {
+          question: "Ever faced difficulty during walking?",
+          num: 8,
+          id: "walk",
+          type: "mcq",
+          options: [
+            {
+              value: "yes",
+              field: "Yes",
+            },
+            {
+              value: "no",
+              field: "No",
+            },
+          ],
+        },
+        {
+          question: "Choose your gender",
+          num: 9,
+          id: "sex",
+          type: "mcq",
+          options: [
+            {
+              value: "male",
+              field: "Male",
+            },
+            {
+              value: "female",
+              field: "Female",
+            },
+          ],
+        },
+        {
+          question: "Enter your age",
+          num: 10,
+          id: "age",
+          type: "blank",
+        },
+      ];
+      const getCategory = (id) =>{
+        if(id === "high_bp"){
+            return "Blood Pressure"
+        }
+        else if(id === "cholestrol"){
+            return "Cholestrol"
+        }
+        else if(id === "bmi"){
+            return "BMI"
+        }
+        else if(id === "stroke"){
+            return "Stroke"
+        }
+        else if(id === "heart_condition"){
+            return "Heart Condition"
+        }
+        else if(id === "general_health"){
+            return "General Health"
+        }
+        else if(id === "physical_health"){
+            return "Physical Health"
+        }
+        else if(id === "walk"){
+            return "Walking Difficulty"
+        }
+        else if(id === "sex"){
+            return "Gender"
+        }
+        else if(id === "age"){
+            return "Age"
+        }
+      }
+      let answers = [];
+      const quiz_data = (id) => {
+        console.log(id, "got input id");
+        let ans = document.getElementById(id).value;
+        if (ans && ans.length > 0) {
+          answers.push(ans);
+          console.log(answers, "answers");
+          let checking_for_replies = JSON.parse(
+            window.localStorage.getItem("messages")
+          );
+          if (checking_for_replies && checking_for_replies.length > 0) {
+            console.log("bf adding", checking_for_replies);
+            let message = {
+              user: `${getCategory(id)} :- ${ans}`,
+              reply: { reply: questions[answers.length], isQuestion: true },
+            };
+            checking_for_replies.push(message);
+            window.localStorage.setItem(
+              "messages",
+              JSON.stringify(checking_for_replies)
+            );
+            if (questions.length === answers.length) {
+              const todo = {
+                high_bp: answers[0],
+                cholestrol: answers[1],
+                // cholestrol_level: document.getElementById("cholestrol_level").value,
+                bmi: answers[2],
+                // smoker: document.getElementById("smoker").value,
+                stroke: answers[3],
+                heart_condition: answers[4],
+                // physical_activity: document.getElementById("physical_activity").value,
+                // fruits: document.getElementById("fruits").value,
+                // veggies: document.getElementById("veggies").value,
+                // alcohol_consumption: document.getElementById("alcohol_consumption")
+                //   .value,
+                // doctor_consultation: document.getElementById("doctor_consultation")
+                //   .value,
+                general_health: answers[5],
+                // mental_health: document.getElementById("mental_health").value,
+                physical_health: answers[6],
+                walk: answers[7],
+                sex: answers[8],
+                age: answers[9],
+              };
+              fetch("http://localhost:5000/submit", {
+                method: "POST",
+                body: JSON.stringify(todo),
+                headers: {
+                  "Content-type": "application/json",
+                },
+              })
+                .then((response) => response.json())
+                .then((json) => {
+                  console.log(json);
+                  let checking_for_replies = JSON.parse(
+                        window.localStorage.getItem("messages")
+                    );
+                  // let result = {
+                  //   user: "quiz submitted",
+                  //   reply: { reply: {
+                  //               question: `Your predicted stage of diabetes is SVM => ${json.svm_predicted.output} K means => ${json.km_predicted.output} Random Forest => ${json.rf_predicted.output}`,
+                  //               num: 3,
+                  //               id: "bmi",
+                  //               type: "blank",
+                  //             }, isQuestion: true },
+                  //   };
+                  let result = {
+                    user : "submitted",
+                    reply : {
+                      isQuestion : false,
+                      reply : `
+                      Your predicted stage of diabetes is 
+                      <br>
+                      SVM => ${json.svm_predicted.output} <br>
+                      K means => ${json.km_predicted.output} <br>
+                      Random Forest => ${json.rf_predicted.output}<br>
+                      Thanks for chatting with me.`}
+                  }
+                    //checking_for_replies.push(result);
+                    window.localStorage.setItem(
+                    "messages",
+                    JSON.stringify([result])
+                    );
+                    getReplies();
+                //   alert(`
+                //     predicted output :- 
+                //     SVM => ${json.svm_predicted.output}
+                //     K means => ${json.km_predicted.output}
+                //     Random Forest => ${json.rf_predicted.output}
+                //     `);
+                });
+            } else {
+              getReplies();
+            }
+          }
+        } else {
+          alert("Please select or write your answer");
+        }
+      };
+
+      const getReplies = () => {
+        const checkForReplies = window.localStorage.getItem("messages");
+        if (checkForReplies !== null) {
+          const parseReplies = JSON.parse(checkForReplies);
+          console.log(parseReplies, "replies");
+          if (parseReplies && parseReplies.length > 0) {
+            document.getElementById("chat").innerHTML = parseReplies.map(
+              (message) => {
+                console.log(message && message.reply && message.reply.isQuestion,'question or not')
+                if (message && message.reply && message.reply.isQuestion === false) {
+                  return `
+                    <div style="display:block" id = "user_chat">
+                        <div style="margin: 15px 20px;background-color: lightslategray;padding: 10px 10px;max-width:350px; border-radius: 5px; width: max-content;">
+                            <h6 style="margin: 0px;font-size: 15px;font-weight: normal;color: white" id="user_message">${message.user}</h6>
+                        </div>
+                    </div>
+                    <div id="bot_chat" style="display: flex;align-items: center;justify-content: end;margin: 10px 0px">
+                        <div style="background-color : #EDEEF7;padding : 5px 5px;width : 350px; border-radius: 5px;">
+                            <h6 style="margin: 0px;font-size: 18px;font-weight: normal;color: darkslateblue" id="bot_message">${message.reply.reply}</h6>
+                        </div>
+                    </div>
+                    `;
+                } else if (message.reply.isQuestion === true) {
+                  if (message && message.reply && message.reply.reply && message.reply.reply.type === "blank") {
+                    return `
+                        <div style="display:block" id = "user_chat">
+                            <div style="margin: 15px 20px;background-color: lightslategray;padding: 10px 10px;max-width:350px; border-radius: 5px; width: max-content;">
+                                <h6 style="margin: 0px;font-size: 15px;font-weight: normal;color: white" id="user_message">${message.user}</h6>
+                            </div>
+                        </div>
+                        <div id="bot_chat" style="display: flex;align-items: center;justify-content: end;margin: 10px 0px">
+                            <div style="background-color : #EDEEF7;padding : 5px 5px;width : 350px; border-radius: 5px;">
+                                <div style="display: block; align-items: center; justify-content: center">
+                                    <h6 style="margin:3px;color: darkslateblue;font-size:18px;font-weight:normal">${message.reply.reply.question}</h6>
+                                    <input style="height:28px;font-size:16px;color:darkslateblue" onchange="quiz_data('${message.reply.reply.id}')" id="${message.reply.reply.id}" type="number" />
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                  } else {
+                    return `
+                        <div style="display:block" id = "user_chat">
+                            <div style="margin: 15px 20px;background-color: lightslategray;padding: 10px 10px; border-radius: 5px; width: max-content;">
+                                <h6 style="margin: 0px;font-size: 15px;font-weight: normal;color: white" id="user_message">${message.user}</h6>
+                            </div>
+                        </div>
+                        <div id="bot_chat" style="display: flex;align-items: center;justify-content: end;margin: 10px 0px">
+                            <div style="background-color : #EDEEF7;padding : 5px 5px;width : 350px; border-radius: 5px;">
+                                <div style="display: block; align-items: center; justify-content: block">
+                                    <p style="margin-right: 2%;color :darkslateblue;font-size : 18px;font-weight : normal">${message.reply.reply.question}</p>
+                                    <select style="text-align:center;height:35px;outline:none;border:0.8px solid darkgray;border-radius:5px" onchange="quiz_data('${message.reply.reply.id}')" id="${message.reply.reply.id}">
+                                        <option value="">Please select ...</option>
+                                        <option value="${message.reply.reply.options[0].value}">${message.reply.reply.options[0].field}</option>
+                                        <option value="${message.reply.reply.options[1].value}">${message.reply.reply.options[1].field}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                  }
+                }
+              }
+            );
+            let chat_div = document.getElementById("chat");
+            console.log(chat_div.scrollHeight,'chat_height')
+            chat_div.scrollTop = chat_div.scrollHeight;
+          }
+          //document.getElementById("bot_chat").style.display = "flex";
+          //document.getElementById("bot_message").innerHTML = parseReplies[0].reply.reply;
+        } else {
+          alert("Error fetching replies");
+        }
+      };
+
+      const fetchQuestion = (num) => {
+        return questions[num];
+      };
+
+      const sendMessage = () => {
+        const userMessage = document.getElementById("send_message").value;
+        console.log(userMessage, "user message");
+        document.getElementById("send_message").value = "";
+        // document.getElementById("user_chat").style.display = "block";
+        fetch("http://localhost:5000/send_message", {
+          method: "POST",
+          body: JSON.stringify(userMessage),
+          headers: {
+            "Content-type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json, typeof json);
+            // alert(`
+            // reply - ${json.message}
+            // `)
+            let checking_for_replies = window.localStorage.getItem("messages");
+            if (
+              checking_for_replies === null ||
+              checking_for_replies === undefined
+            ) {
+              window.localStorage.setItem(
+                "messages",
+                JSON.stringify([
+                  {
+                    user: userMessage,
+                    reply: json.message,
+                  },
+                ])
+              );
+              getReplies();
+            } else if (userMessage === "start") {
+              let checking_for_replies = JSON.parse(window.localStorage.getItem("messages"));
+              startQuiz = true;
+              window.localStorage.setItem("num", 1);
+              window.localStorage.setItem(
+                "messages",
+                JSON.stringify([
+                  {
+                    user: userMessage,
+                    reply: {isQuestion : true, reply : questions[0]},
+                  },
+                ])
+              );
+              getReplies();
+            } else if (
+              checking_for_replies !== null ||
+              checking_for_replies !== undefined
+            ) {
+              let replies = JSON.parse(checking_for_replies);
+              if (replies && replies.length > 0) {
+                let message = {
+                  user: userMessage,
+                  reply: json.message,
+                };
+                replies.push(message);
+                window.localStorage.setItem(
+                  "messages",
+                  JSON.stringify(replies)
+                );
+                getReplies();
+              }
+            }
+
+            // document.getElementById("bot_chat").style.display = "flex";
+            // document.getElementById("bot_message").innerHTML = json.message;
+          });
+      };
+    </script>
+    <div style="display: block; align-items: center; justify-content: center;">
+      <div style="text-align: center">
+        <h3 style="font-size:23px;font-weight:bold;text-transform:capitalize;word-spacing: 0.5px;letter-spacing: 1.5px;">Custom chatbot predictor for diabetes stages</h3>
+        <div
+          style="
+            margin-left: 23%;
+            width: 650px;
+            height: 350px;
+            border: 1px solid dodgerblue;
+            border-radius: 5px;
+            background-color:#D3CEDF;
+            overflow-y: scroll;
+            padding: 5px;
+          "
+        >
+          <div id="chat"></div>
+        </div>
+      </div>
+      <div style="text-align: center; margin: 10px 0px">
+        <input
+          id="send_message"
+          style="width: 650px; height: 60px;padding: 3px;margin-left:-4%; outline: none;border: 1px solid darkgrey;background-color: #F4F9F9;font-size: 16px;font-weight: bold;color: darkslateblue"
+          type="text"
+          placeholder="Enter your message"
+        />
+      </div>
+      <button style="cursor:pointer;margin: 10px 0px;margin-left: 68%;background-color: darkslateblue;outline: none;border: dodgerblue;border-radius: 5px;padding: 8px 10px;color: white;font-size: 16px;" onclick="sendMessage()">SEND</button>
+    </div>
+  </body>
+</html>

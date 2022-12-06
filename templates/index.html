@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      const submit = () => {
+        const todo = {
+          high_bp: document.getElementById("high_bp").value,
+          cholestrol: document.getElementById("cholestrol").value,
+          // cholestrol_level: document.getElementById("cholestrol_level").value,
+          bmi: document.getElementById("bmi").value,
+          // smoker: document.getElementById("smoker").value,
+          stroke: document.getElementById("stroke").value,
+          heart_condition: document.getElementById("heart_condition").value,
+          // physical_activity: document.getElementById("physical_activity").value,
+          // fruits: document.getElementById("fruits").value,
+          // veggies: document.getElementById("veggies").value,
+          // alcohol_consumption: document.getElementById("alcohol_consumption")
+          //   .value,
+          // doctor_consultation: document.getElementById("doctor_consultation")
+          //   .value,
+          general_health: document.getElementById("general_health").value,
+          // mental_health: document.getElementById("mental_health").value,
+          physical_health: document.getElementById("physical_health").value,
+          walk: document.getElementById("walk").value,
+          sex: document.getElementById("sex").value,
+          age: document.getElementById("age").value,
+        };
+        fetch("http://localhost:5000/submit", {
+          method: "POST",
+          body: JSON.stringify(todo),
+          headers: {
+            "Content-type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json, typeof(json), typeof(json["output"]));
+            alert(`
+            predicted output :- 
+            SVM => ${json.svm_predicted.output}
+            K means => ${json.km_predicted.output}
+            Random Forest => ${json.rf_predicted.output}
+            `)
+          });
+      };
+
+      const sendMessage = () =>{
+        const userMessage = document.getElementById("send_message").value;
+        console.log(userMessage, 'user message')
+        fetch("http://localhost:5000/send_message", {
+          method: "POST",
+          body: JSON.stringify(userMessage),
+          headers: {
+            "Content-type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json, typeof(json));
+            alert(`
+            reply - ${json.message}
+            `)
+          });
+      }
+    </script>
+    <div style="display: block; align-items: center; justify-content: center">
+      <h3>diabetes predictor</h3>
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Do you have high blood pressure?</p>
+        <select id="high_bp">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Do you have high cholestrol?</p>
+        <select id="cholestrol">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <!-- <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">
+          Previously, have you checked for cholestrol levels?
+        </p>
+        <select id="cholestrol_level">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div> -->
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Enter your BMI</p>
+        <input type="number" id="bmi" />
+      </div>
+      <!-- <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Are you a smoker?</p>
+        <select id="smoker">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div> -->
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Do you ever had a stroke?</p>
+        <select id="stroke">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">
+          Have you experienced any severe heart condition before?
+        </p>
+        <select id="heart_condition">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <!-- <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">
+          Are you a the kind of person who does lot of physical activity daily?
+        </p>
+        <select id="physical_activity">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div> -->
+      <!-- <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Do you eat fruits daily?</p>
+        <select id="fruits">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Do you eat vegetables daily?</p>
+        <select id="veggies">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Do you heavily consume alcohol daily?</p>
+        <select id="alcohol_consumption">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div> -->
+      <!-- <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">
+          Previously, have you ever not consulted doctor because of cost as a
+          reason?
+        </p>
+        <select id="doctor_consultation">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div> -->
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">
+          Let us know your general health condition?
+        </p>
+        <select id="general_health">
+          <option value="good">Good</option>
+          <option value="not good">Not Good</option>
+        </select>
+      </div>
+      <!-- <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">
+          In past 30 days, please enter how many number of days have you ever
+          experienced stress, depression, etc.
+        </p>
+        <input type="number" id="mental_health" />
+      </div> -->
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">
+          In past 30 days, please enter how many number of days have you faced
+          pain or discomfort physically?
+        </p>
+        <input type="number" id="physical_health" />
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Ever faced difficulty during walking?</p>
+        <select id="walk">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Choose your gender</p>
+        <select id="sex">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: block">
+        <p style="margin-right: 2%">Enter your age</p>
+        <input type="number" id="age" />
+      </div>
+      <div>
+        <button onclick="submit()">predict</button>
+      </div>
+
+    <div style="display: block;align-items: center;justify-content: center;">
+       <input id="send_message" style="width : 650px; height : 60px" type="text" />
+       <button onclick="sendMessage()">message</button>
+    </div>
+    </div>
+  </body>
+</html>
